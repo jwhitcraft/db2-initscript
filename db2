@@ -41,7 +41,8 @@ start() {
     echo -n $"Starting IBM DB2 instance [${DB2USER}]"
         daemon --user=${DB2USER} "\
         source ${INSTHOME}/sqllib/db2profile; \
-        db2start" >${LOGFILE} 2>&1 && success || failure
+        db2start; \
+        db2ts start for text" >${LOGFILE} 2>&1 && success || failure
     RETVAL=$?
     [[ $RETVAL -ne 0 ]] && cat ${LOGFILE}
     rm -f ${LOGFILE}
@@ -72,6 +73,7 @@ stop() {
     else
         daemon --user=${DB2USER} "\
             source ${INSTHOME}/sqllib/db2profile; \
+            db2ts stop for text; \
             db2stop force" >${LOGFILE} 2>&1 && success || failure
         RETVAL=$?
         if [ $RETVAL -ne 0 ]; then
